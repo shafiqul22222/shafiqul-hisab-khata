@@ -7,99 +7,169 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --primary-color: #007bff; --primary-hover: #0056b3; --light-bg: #f0f2f5; --white: #fff; --dark-text: #333; --light-text: #555; --border-color: #ddd; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: var(--light-bg); }
-        .app-container { width: 100%; max-width: 420px; height: 100vh; max-height: 850px; background-color: var(--white); border-radius: 20px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); overflow: hidden; position: relative; display: flex; flex-direction: column; }
-        @media (max-width: 480px) { .app-container { width: 100vw; height: 100vh; border-radius: 0; } }
-        .panel { position: absolute; width: 100%; height: 100%; top: 0; left: 100%; display: flex; flex-direction: column; background-color: var(--white); transition: left 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94); z-index: 1; }
-        .panel.active { left: 0; z-index: 2; }
-        .form-panel-content { display: flex; flex-direction: column; align-items: center; padding: 20px; box-sizing: border-box; height: 100%; justify-content: center; }
-        .form-panel-content h2 { color: var(--dark-text); margin-bottom: 2rem; }
-        form { display: flex; flex-direction: column; width: 100%; }
-        input, select, textarea { margin-bottom: 15px; padding: 14px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 16px; box-sizing: border-box; width: 100%; }
-        textarea { resize: vertical; min-height: 80px; }
-        button[type="submit"], .btn { padding: 14px; border-radius: 8px; border: none; background-color: var(--primary-color); color: white; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.3s; }
-        button[type="submit"]:hover, .btn:hover { background-color: var(--primary-hover); }
-        .form-panel-content p { margin-top: 20px; color: var(--light-text); }
-        .form-panel-content a { color: var(--primary-color); text-decoration: none; font-weight: bold; }
-        #app-interface header, .feature-panel header { width: 100%; display: flex; align-items: center; padding: 15px 20px; background-color: var(--primary-color); color: white; box-sizing: border-box; position: sticky; top: 0; z-index: 10; }
-        #app-interface h1, .feature-panel h2 { margin: 0; font-size: 1.5rem; }
-        #app-interface header { justify-content: space-between; }
+        :root {
+            --primary-color: #007AFF;
+            --primary-hover: #0056b3;
+            --background-color: #f4f6f9;
+            --card-bg-color: #ffffff;
+            --text-color: #2c3e50;
+            --subtle-text-color: #8e8e93;
+            --border-color: #e5e5ea;
+            --accent-income: #34C759;
+            --accent-expense: #FF3B30;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap');
         
-        /* Profile Icon & Picture Styles */
+        body {
+            font-family: 'Hind Siliguri', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--background-color);
+        }
+        .app-container {
+            width: 100%; max-width: 420px; height: 100vh; max-height: 850px;
+            background-color: var(--background-color);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+            display: flex; flex-direction: column;
+        }
+        @media (max-width: 480px) { .app-container { width: 100vw; height: 100vh; border-radius: 0; } }
+        
+        /* Panel & Navigation */
+        .panel { position: absolute; width: 100%; height: 100%; top: 0; left: 100%; display: flex; flex-direction: column; background-color: var(--background-color); transition: left 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94); z-index: 1; }
+        .panel.active { left: 0; z-index: 2; }
+        
+        /* Header */
+        #app-interface header, .feature-panel header { width: 100%; display: flex; align-items: center; padding: 15px 20px; background-color: var(--primary-color); color: white; box-sizing: border-box; position: sticky; top: 0; z-index: 10; }
+        #app-interface h1, .feature-panel h2 { margin: 0; font-size: 1.5rem; font-weight: 600; }
+        #app-interface header { justify-content: space-between; }
+        .back-btn { background: none; border: none; color: white; font-size: 22px; margin-right: 15px; cursor: pointer; padding: 5px; }
+
+        /* Profile Icon & Dropdown */
         .profile-icon { position: relative; width: 40px; height: 40px; cursor: pointer; }
         .profile-icon > i { font-size: 40px; color: white; }
         .profile-icon img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid white; display: none; }
         .profile-icon.has-photo i { display: none; }
         .profile-icon.has-photo img { display: block; }
-
-        .profile-dropdown { display: none; position: absolute; top: 50px; right: 0; background-color: var(--white); border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15); z-index: 10; width: 200px; overflow: hidden; }
+        .profile-dropdown { display: none; position: absolute; top: 50px; right: 0; background-color: var(--card-bg-color); border-radius: 8px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); z-index: 10; width: 220px; overflow: hidden; border: 1px solid var(--border-color); }
         .profile-icon.active .profile-dropdown { display: block; }
-        .profile-dropdown a { display: block; padding: 12px 18px; color: var(--dark-text); text-decoration: none; font-size: 1rem; }
-        .profile-dropdown a:hover { background-color: var(--light-bg); }
-        .profile-info { padding: 12px 18px; border-bottom: 1px solid var(--border-color); color: var(--light-text); font-size: 0.9rem; }
-        .profile-info strong { color: var(--dark-text); }
-        
-        /* Gorgeous Button Styles */
-        .app-buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; padding: 25px; }
-        .app-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; border-radius: 15px; border: none; color: white; font-size: 1rem; font-weight: bold; cursor: pointer; text-align: center; transition: transform 0.2s, box-shadow 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .app-btn:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
-        .app-btn i { font-size: 28px; margin-bottom: 12px; }
-        .app-btn:nth-child(1) { background: linear-gradient(45deg, #FF5F6D, #FFC371); }
-        .app-btn:nth-child(2) { background: linear-gradient(45deg, #43C6AC, #191654); }
-        .app-btn:nth-child(3) { background: linear-gradient(45deg, #8E2DE2, #4A00E0); }
-        .app-btn:nth-child(4) { background: linear-gradient(45deg, #11998e, #38ef7d); }
-        .app-btn:nth-child(5) { background: linear-gradient(45deg, #f7971e, #ffd200); }
-        .app-btn:nth-child(6) { background: linear-gradient(45deg, #00c6ff, #0072ff); }
-        .app-btn:nth-child(7) { background: linear-gradient(45deg, #ED213A, #93291E); }
+        .profile-dropdown a { display: flex; align-items: center; gap: 10px; padding: 12px 18px; color: var(--text-color); text-decoration: none; font-size: 1rem; }
+        .profile-dropdown a:hover { background-color: var(--background-color); }
+        .profile-info { padding: 12px 18px; border-bottom: 1px solid var(--border-color); color: var(--subtle-text-color); font-size: 0.9rem; }
+        .profile-info strong { color: var(--text-color); }
 
-        .back-btn { background: none; border: none; color: white; font-size: 22px; margin-right: 15px; cursor: pointer; padding: 5px; }
+        /* Tap for Balance Style */
+        #balance-displayer { margin: 20px 20px 0 20px; padding: 15px 20px; background: var(--card-bg-color); border: 1px solid var(--border-color); border-radius: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: box-shadow 0.2s; }
+        #balance-displayer:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.07); }
+        .balance-text p { margin: 0; color: var(--subtle-text-color); font-weight: 500; }
+        .balance-text h2 { margin: 5px 0 0 0; display: none; color: var(--text-color); font-size: 1.8rem; }
+        #balance-displayer i { font-size: 1.5rem; color: var(--primary-color); }
+        #balance-displayer.visible .balance-text p { display: none; }
+        #balance-displayer.visible .balance-text h2 { display: block; }
+
+        /* Compact Button Styles */
+        .app-buttons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; }
+        .app-btn { background-color: var(--card-bg-color); border-radius: 18px; padding: 15px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid var(--border-color); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        .app-btn:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+        .app-btn .icon-wrapper { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; color: white; font-size: 20px; }
+        .app-btn span { color: var(--text-color); font-weight: 600; font-size: 0.9rem; }
+        .icon-dashboard { background: linear-gradient(45deg, #cc2b5e, #753a88); } .icon-bazar-list { background: linear-gradient(45deg, #FF5F6D, #FFC371); } .icon-bazar-khoroch { background: linear-gradient(45deg, #43C6AC, #191654); } .icon-bay { background: linear-gradient(45deg, #8E2DE2, #4A00E0); } .icon-aay { background: linear-gradient(45deg, #11998e, #38ef7d); } .icon-kisti { background: linear-gradient(45deg, #f7971e, #ffd200); } .icon-shonchoy { background: linear-gradient(45deg, #00c6ff, #0072ff); } .icon-report { background: linear-gradient(45deg, #ED213A, #93291E); }
+
+        /* Feature Panel & Form Redesign */
         .feature-panel-content { padding: 20px; width: 100%; box-sizing: border-box; overflow-y: auto; flex-grow: 1; }
-        .form-group { margin-bottom: 15px; width: 100%; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: var(--light-text); }
-        .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
-        .data-table th, .data-table td { border: 1px solid var(--border-color); padding: 8px; text-align: left; }
-        .data-table thead { background-color: #f8f9fa; }
-        .delete-btn { background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 5px; cursor: pointer; }
-        .report-filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
-        .report-filters input { margin-bottom: 0; }
+        .content-card { background: var(--card-bg-color); padding: 20px; border-radius: 15px; border: 1px solid var(--border-color); margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--subtle-text-color); font-size: 0.9rem; }
+        input, select, textarea { background-color: var(--background-color); border: 1px solid var(--border-color); font-weight: 500; transition: border-color 0.2s, box-shadow 0.2s; padding: 14px; border-radius: 8px; font-size: 16px; box-sizing: border-box; width: 100%; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2); outline: none; }
+        button[type="submit"], .btn { background-color: var(--primary-color); font-weight: 600; padding: 14px; border-radius: 8px; border: none; color: white; cursor: pointer; transition: background-color 0.3s; }
         
-        /* Success Card Animation */
-        #success-card {
-            position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%) scale(0.8);
-            background: white;
-            padding: 30px 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            text-align: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
-        }
-        #success-card.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translate(-50%, -50%) scale(1);
-        }
-        #success-card i { font-size: 50px; color: #28a745; margin-bottom: 15px; }
-        #success-card h3 { margin: 0 0 10px 0; color: #333; }
-        #success-card p { margin: 0; color: #555; }
+        /* Table Redesign */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 14px; } .data-table th, .data-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); } .data-table th { background-color: transparent; color: var(--subtle-text-color); font-weight: 600; } .data-table tr:last-child td { border-bottom: none; }
+        .delete-btn { background: transparent; color: var(--accent-expense); border: none; font-size: 16px; cursor: pointer; }
+        
+        /* Dashboard Redesign */
+        .dashboard-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+        .summary-card { padding: 15px; border-radius: 12px; } .summary-card i { font-size: 1.2rem; margin-right: 8px; opacity: 0.7; } .summary-card p { margin: 0 0 5px 0; font-size: 0.9rem; display: flex; align-items: center; } .summary-card h3 { margin: 0; font-size: 1.5rem; }
+        .summary-card.income { background-color: #e5f9e9; color: #1e853a; } .summary-card.expense { background-color: #ffe6e4; color: #d62c1d; } .summary-card.balance { background-color: #e9e9ff; color: #413fc7; } .summary-card.savings { background-color: #fff5e3; color: #e08800; }
+        
+        /* Login/Register Page Design */
+        .auth-panel { display: flex; flex-direction: column; height: 100%; justify-content: space-between; }
+        .auth-header { background: linear-gradient(45deg, var(--primary-color), #5856D6); color: white; text-align: center; padding: 40px 20px 30px 20px; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; }
+        .auth-header i { font-size: 3.5rem; margin-bottom: 15px; } .auth-header h2 { margin: 0; font-size: 1.8rem; font-weight: 700; } .auth-header p { margin: 5px 0 0 0; font-size: 1rem; opacity: 0.9; }
+        .auth-form-container { padding: 20px; }
+        .auth-form-container .content-card { box-shadow: 0 5px 20px rgba(0,0,0,0.05); } .auth-form-container .form-group { position: relative; } .auth-form-container .form-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--subtle-text-color); }
+        .auth-form-container .form-group input { padding-left: 45px; }
+        .auth-footer { text-align: center; padding: 0 20px 20px 20px; } .auth-footer p { margin: 0; color: var(--subtle-text-color); } .auth-footer a { color: var(--primary-color); text-decoration: none; font-weight: 600; }
+        .forgot-password-link { text-align: center; margin-top: 8px; margin-bottom: 20px; } .forgot-password-link a { font-size: 0.95rem; text-decoration: none; color: var(--primary-color); font-weight: 600; }
+        
+        /* Profile Update Styles */
+        .profile-picture-preview { text-align: center; margin-bottom: 20px; }
+        .profile-picture-preview img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid var(--card-bg-color); box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; }
+        .form-divider { border-top: 1px solid var(--border-color); margin: 25px 0; }
+        .form-divider-text { color: var(--subtle-text-color); font-weight: 500; text-align: center; margin-bottom: 15px; }
+        
+        /* Success Card */
+        #success-card { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); background: white; padding: 30px 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); text-align: center; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s; }
+        #success-card.show { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+        #success-card i { font-size: 50px; color: #28a745; margin-bottom: 15px; } #success-card h3 { margin: 0 0 10px 0; color: #333; } #success-card p { margin: 0; color: #555; }
     </style>
 </head>
 <body>
-    <!-- Animated Success Card -->
-    <div id="success-card">
-        <i class="fas fa-check-circle"></i>
-        <h3>সফল হয়েছে!</h3>
-        <p>আপনার রেজিস্ট্রেশন সফল হয়েছে। এখন লগইন করুন।</p>
-    </div>
+    <div id="success-card"><i class="fas fa-check-circle"></i><h3 id="success-card-title"></h3><p id="success-card-message"></p></div>
     
     <div class="app-container">
-        <!-- Login & Register Panels -->
-        <div id="login-panel" class="panel"><div class="form-panel-content"><h2>লগইন</h2><form id="login-form"><input type="tel" id="login-mobile" placeholder="মোবাইল নাম্বার" required><input type="password" id="login-password" placeholder="পাসওয়ার্ড" required><button type="submit">লগইন করুন</button></form><p>অ্যাকাউন্ট নেই? <a href="#" class="nav-link" data-target="register-panel">রেজিস্টার করুন</a></p></div></div>
-        <div id="register-panel" class="panel"><div class="form-panel-content"><h2>নতুন অ্যাকাউন্ট</h2><form id="register-form"><input type="text" id="register-name" placeholder="নাম" required><input type="tel" id="register-mobile" placeholder="মোবাইল নাম্বার" required><input type="password" id="register-password" placeholder="পাসওয়ার্ড" required><input type="password" id="register-confirm-password" placeholder="কনফার্ম পাসওয়ার্ড" required><div class="form-group"><label>প্রোফাইল ছবি (ঐচ্ছিক)</label><input type="file" id="register-photo" accept="image/*"></div><button type="submit">রেজিস্টার করুন</button></form><p>অ্যাকাউন্ট আছে? <a href="#" class="nav-link" data-target="login-panel">লগইন করুন</a></p></div></div>
+        <!-- Auth Panels -->
+        <div id="login-panel" class="panel auth-panel">
+            <div>
+                <div class="auth-header"><i class="fas fa-wallet"></i><h2>হিসাব খাতা</h2><p>স্বাগতম! আপনার অ্যাকাউন্টে লগইন করুন</p></div>
+                <div class="auth-form-container"><form id="login-form" class="content-card">
+                    <div class="form-group"><i class="fas fa-mobile-alt"></i><input type="tel" id="login-mobile" placeholder="মোবাইল নাম্বার" required></div>
+                    <div class="form-group"><i class="fas fa-lock"></i><input type="password" id="login-password" placeholder="পাসওয়ার্ড" required></div>
+                    <div class="forgot-password-link"><a href="#" class="nav-link" data-target="forgot-password-panel">পাসওয়ার্ড ভুলে গেছেন?</a></div>
+                    <button type="submit">লগইন করুন</button>
+                </form></div>
+            </div>
+            <div class="auth-footer"><p>অ্যাকাউন্ট নেই? <a href="#" class="nav-link" data-target="register-panel">এখনই রেজিস্টার করুন</a></p></div>
+        </div>
+        <div id="register-panel" class="panel auth-panel">
+            <div>
+                <div class="auth-header"><i class="fas fa-user-plus"></i><h2>নতুন অ্যাকাউন্ট</h2><p>আপনার তথ্য দিয়ে ফর্মটি পূরণ করুন</p></div>
+                <div class="auth-form-container">
+                    <form id="register-form" class="content-card">
+                        <div class="form-group"><i class="fas fa-user"></i><input type="text" id="register-name" placeholder="আপনার নাম" required></div>
+                        <div class="form-group"><i class="fas fa-mobile-alt"></i><input type="tel" id="register-mobile" placeholder="মোবাইল নাম্বার" required></div>
+                        <div class="form-group"><i class="fas fa-lock"></i><input type="password" id="register-password" placeholder="পাসওয়ার্ড" required></div>
+                        <div class="form-group"><i class="fas fa-check-circle"></i><input type="password" id="register-confirm-password" placeholder="কনফার্ম পাসওয়ার্ড" required></div>
+                        <div class="form-group"><label>প্রোফাইল ছবি (ঐচ্ছিক)</label><input type="file" id="register-photo" accept="image/*"></div>
+                        <button type="submit">রেজিস্টার করুন</button>
+                    </form>
+                </div>
+            </div>
+            <div class="auth-footer"><p>ইতিমধ্যে অ্যাকাউন্ট আছে? <a href="#" class="nav-link" data-target="login-panel">লগইন করুন</a></p></div>
+        </div>
+        <div id="forgot-password-panel" class="panel auth-panel">
+            <div>
+                <div class="auth-header"><i class="fas fa-key"></i><h2>পাসওয়ার্ড পুনরুদ্ধার</h2><p>আপনার রেজিস্টার্ড মোবাইল নম্বর দিন</p></div>
+                <div class="auth-form-container"><form id="forgot-password-form" class="content-card"><div class="form-group"><i class="fas fa-mobile-alt"></i><input type="tel" id="forgot-mobile" placeholder="মোবাইল নাম্বার" required></div><button type="submit">এগিয়ে যান</button></form></div>
+            </div>
+            <div class="auth-footer"><p>লগইন পৃষ্ঠায় ফিরুন? <a href="#" class="nav-link" data-target="login-panel">এখানে ক্লিক করুন</a></p></div>
+        </div>
+        <div id="reset-password-panel" class="panel auth-panel">
+            <div>
+                <div class="auth-header"><i class="fas fa-shield-alt"></i><h2>নতুন পাসওয়ার্ড সেট করুন</h2><p>একটি শক্তিশালী পাসওয়ার্ড দিন</p></div>
+                <div class="auth-form-container"><form id="reset-password-form" class="content-card">
+                    <div class="form-group"><i class="fas fa-lock"></i><input type="password" id="reset-new-password" placeholder="নতুন পাসওয়ার্ড" required></div>
+                    <div class="form-group"><i class="fas fa-check-circle"></i><input type="password" id="reset-confirm-password" placeholder="কনফার্ম পাসওয়ার্ড" required></div>
+                    <button type="submit">পাসওয়ার্ড পরিবর্তন করুন</button>
+                </form></div>
+            </div>
+            <div class="auth-footer"><p>লগইন পৃষ্ঠায় ফিরুন? <a href="#" class="nav-link" data-target="login-panel">এখানে ক্লিক করুন</a></p></div>
+        </div>
 
         <!-- Main App Interface -->
         <div id="app-interface" class="panel">
@@ -111,131 +181,125 @@
                     <div class="profile-dropdown">
                         <div class="profile-info">নাম: <strong id="profile-name"></strong></div>
                         <div class="profile-info">মোবাইল: <strong id="profile-mobile"></strong></div>
-                        <a href="#" id="logout-btn">লগ আউট</a>
+                        <a href="#" class="nav-link" data-target="profile-update-panel"><i class="fas fa-edit"></i> প্রোফাইল আপডেট</a>
+                        <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> লগ আউট</a>
                     </div>
                 </div>
             </header>
+            <div id="balance-displayer"><div class="balance-text"><p>ব্যালেন্স দেখতে ট্যাপ করুন</p><h2 id="current-balance-amount"></h2></div><i id="balance-toggle-icon" class="fas fa-eye"></i></div>
             <main class="app-buttons">
-                <button class="app-btn nav-link" data-target="bazar-list-panel"><i class="fas fa-list-alt"></i> বাজার লিস্ট</button>
-                <button class="app-btn nav-link" data-target="bazar-khoroch-panel"><i class="fas fa-shopping-cart"></i> বাজার খরচ</button>
-                <button class="app-btn nav-link" data-target="bay-panel"><i class="fas fa-money-bill-wave"></i> ব্যয়</button>
-                <button class="app-btn nav-link" data-target="aay-panel"><i class="fas fa-dollar-sign"></i> আয়</button>
-                <button class="app-btn nav-link" data-target="kisti-panel"><i class="fas fa-calendar-alt"></i> কিস্তি</button>
-                <button class="app-btn nav-link" data-target="shonchoy-panel"><i class="fas fa-piggy-bank"></i> সঞ্চয়</button>
-                <button class="app-btn nav-link" data-target="report-panel"><i class="fas fa-chart-line"></i> রিপোর্ট</button>
+                <button class="app-btn nav-link" data-target="dashboard-panel"><div class="icon-wrapper icon-dashboard"><i class="fas fa-tachometer-alt"></i></div><span>ড্যাশবোর্ড</span></button>
+                <button class="app-btn nav-link" data-target="bazar-list-panel"><div class="icon-wrapper icon-bazar-list"><i class="fas fa-list-alt"></i></div><span>বাজার লিস্ট</span></button>
+                <button class="app-btn nav-link" data-target="bazar-khoroch-panel"><div class="icon-wrapper icon-bazar-khoroch"><i class="fas fa-shopping-cart"></i></div><span>বাজার খরচ</span></button>
+                <button class="app-btn nav-link" data-target="bay-panel"><div class="icon-wrapper icon-bay"><i class="fas fa-money-bill-wave"></i></div><span>ব্যয়</span></button>
+                <button class="app-btn nav-link" data-target="aay-panel"><div class="icon-wrapper icon-aay"><i class="fas fa-dollar-sign"></i></div><span>আয়</span></button>
+                <button class="app-btn nav-link" data-target="kisti-panel"><div class="icon-wrapper icon-kisti"><i class="fas fa-calendar-alt"></i></div><span>কিস্তি</span></button>
+                <button class="app-btn nav-link" data-target="shonchoy-panel"><div class="icon-wrapper icon-shonchoy"><i class="fas fa-piggy-bank"></i></div><span>সঞ্চয়</span></button>
+                <button class="app-btn nav-link" data-target="report-panel"><div class="icon-wrapper icon-report"><i class="fas fa-chart-line"></i></div><span>রিপোর্ট</span></button>
             </main>
         </div>
         
-        <!-- Feature Panels -->
-        <!-- Bazar List Panel -->
-        <div id="bazar-list-panel" class="panel feature-panel">
-            <header><button class="back-btn"><i class="fas fa-arrow-left"></i></button><h2>বাজার লিস্ট</h2></header>
+        <!-- Profile Update Panel -->
+        <div id="profile-update-panel" class="panel feature-panel">
+            <header><button class="back-btn"><i class="fas fa-arrow-left"></i></button><h2>প্রোফাইল আপডেট</h2></header>
             <div class="feature-panel-content">
-                <form id="bazar-list-form">
-                    <div class="form-group"><label>তারিখ</label><input type="date" id="bazar-list-date" required></div>
-                    <div class="form-group"><label>পণ্যের তালিকা (এক লাইনে একটি)</label><textarea id="bazar-list-products" placeholder="e.g.&#10;আলু&#10;চাল&#10;ডাল" required></textarea></div>
-                    <button type="submit">লিস্ট যোগ করুন</button>
-                </form>
-                <table class="data-table"><thead><tr><th>তারিখ</th><th>পণ্য তালিকা</th><th>মুছুন</th></tr></thead><tbody id="bazar-list-table-body"></tbody></table>
+                <div class="content-card">
+                    <div class="profile-picture-preview">
+                        <label for="update-photo"><img id="update-profile-img-preview" src="" alt="Profile Picture"></label>
+                        <input type="file" id="update-photo" accept="image/*" style="display: none;">
+                    </div>
+                    <form id="profile-update-form">
+                        <div class="form-group"><label for="update-name">নাম</label><input type="text" id="update-name" required></div>
+                        <div class="form-divider"></div>
+                        <p class="form-divider-text">পাসওয়ার্ড পরিবর্তন করতে চাইলে নিচের ঘরগুলো পূরণ করুন</p>
+                        <div class="form-group"><label for="update-current-password">বর্তমান পাসওয়ার্ড</label><input type="password" id="update-current-password" placeholder="বর্তমান পাসওয়ার্ড দিন"></div>
+                        <div class="form-group"><label for="update-new-password">নতুন পাসওয়ার্ড</label><input type="password" id="update-new-password" placeholder="নতুন পাসওয়ার্ড দিন"></div>
+                        <div class="form-group"><label for="update-confirm-password">কনফার্ম পাসওয়ার্ড</label><input type="password" id="update-confirm-password" placeholder="আবার নতুন পাসওয়ার্ড দিন"></div>
+                        <button type="submit">আপডেট করুন</button>
+                    </form>
+                </div>
             </div>
         </div>
 
-        <!-- Bazar Khoroch Panel -->
-        <div id="bazar-khoroch-panel" class="panel feature-panel">
-            <header><button class="back-btn"><i class="fas fa-arrow-left"></i></button><h2>বাজার খরচ</h2></header>
-            <div class="feature-panel-content">
-                <form id="bazar-khoroch-form">
-                    <div class="form-group"><label>তারিখ</label><input type="date" id="bazar-khoroch-date" required></div>
-                    <div class="form-group"><label>পণ্যের নাম</label><input type="text" id="bazar-khoroch-product" placeholder="e.g. আলু" required></div>
-                    <div class="form-group"><label>পরিমান</label><input type="number" id="bazar-khoroch-quantity" placeholder="e.g. 2" required step="any"></div>
-                    <div class="form-group"><label>একক</label><select id="bazar-khoroch-unit"><option>কেজি</option><option>পিস</option><option>লিটার</option><option>গ্রাম</option><option>প্যাকেট</option></select></div>
-                    <div class="form-group"><label>একক মূল্য</label><input type="number" id="bazar-khoroch-unit-price" placeholder="0.00" required step="any"></div>
-                    <div class="form-group"><label>মোট মূল্য</label><input type="number" id="bazar-khoroch-total" placeholder="0.00" readonly></div>
-                    <div class="form-group"><label>মন্তব্য (ঐচ্ছিক)</label><input type="text" id="bazar-khoroch-comment"></div>
-                    <button type="submit">খরচ যোগ করুন</button>
-                </form>
-                <table class="data-table"><thead><tr><th>তারিখ</th><th>পণ্য</th><th>মোট মূল্য</th><th>মুছুন</th></tr></thead><tbody id="bazar-khoroch-table-body"></tbody></table>
-            </div>
-        </div>
-        
-        <!-- Other feature panels are the same -->
-        <div id="bay-panel" class="panel feature-panel"><header><button class="back-btn"><i class="fas fa-arrow-left"></i></button><h2>সাধারণ ব্যয়</h2></header><div class="feature-panel-content"><form id="expense-form"><div class="form-group"><label>তারিখ</label><input type="date" id="expense-date" required></div><div class="form-group"><label>ব্যয়ের খাত</label><select id="expense-category" required><option>বাসা ভাড়া</option><option>কারেন্ট বিল</option><option>গ্যাস বিল</option><option>পানি বিল</option><option>গাড়ি ভাড়া</option><option>পোশাক</option><option>অন্যান্য</option></select></div><div class="form-group"><label>টাকার পরিমান</label><input type="number" id="expense-amount" placeholder="0.00" required step="any"></div><button type="submit">ব্যয় যোগ করুন</button></form><table class="data-table"><thead><tr><th>তারিখ</th><th>খাত</th><th>পরিমান</th><th>মুছুন</th></tr></thead><tbody id="expense-table-body"></tbody></table></div></div>
-        <div id="aay-panel" class="panel feature-panel"><header><button class="back-btn"><i class="fas fa-arrow-left"></i></button><h2>আয়</h2></header><div class="feature-panel-content"><form id="income-form"><div class="form-group"><label>তারিখ</label><input type="date" id="income-date" required></div><div class="form-group"><label>আয়ের খাত</label><select id="income-source" required><option>চাকরি</option><option>ফ্রিলান্সিং</option><option>ব্যবসা</option><option>বোনাস</option><option>অন্যান্য</option></select></div><div class="form-group"><label>টাকার পরিমান</label><input type="number" id="income-amount" placeholder="0.00" required step="any"></div><button type="submit">আয় যোগ করুন</button></form><table class="data-table"><thead><tr><th>তারিখ</th><th>খাত</th><th>পরিমান</th><th>মুছুন</th></tr></thead><tbody id="income-table-body"></tbody></table></div></div>
-        <div id="kisti-panel" class="panel feature-panel"><header><button class="back-btn"><i class="fas fa-arrow-left"></i></button><h2>কিস্তি</h2></header><div class="feature-panel-content"><form id="kisti-form"><div class="form-group"><label>কিস্তির নাম</label><input type="text" id="kisti-name" placeholder="e.g. ব্যাংক লোন" required></div><div class="form-group"><label>কিস্তির ধরন</label><select id="kisti-type"><option value="weekly">সাপ্তাহিক</option><option value="monthly">মাসিক</option><option value="yearly">বাৎসরিক</option></select></div><div class="form-group"><label>কিস্তির পরিমান</label><input type="number" id="kisti-amount" placeholder="0.00" required step="any"></div><div class="form-group"><label>প্রথম কিস্তির তারিখ</label><input type="date" id="kisti-start-date" required></div><button type="submit">কিস্তি যোগ করুন</button></form><table class="data-table"><thead><tr><th>নাম</th><th>পরিমান</th><th>পরবর্তী তারিখ</th><th>মুছুন</th></tr></thead><tbody id="kisti-table-body"></tbody></table></div></div>
-        <div id="shonchoy-panel" class="panel feature-panel"><header><button class="back-btn"><i class="fas fa-arrow-left"></i></button><h2>সঞ্চয়</h2></header><div class="feature-panel-content"><form id="savings-form"><div class="form-group"><label>তারিখ</label><input type="date" id="savings-date" required></div><div class="form-group"><label>সঞ্চয়ের পরিমান</label><input type="number" id="savings-amount" placeholder="0.00" required step="any"></div><button type="submit">সঞ্চয় যোগ করুন</button></form><table class="data-table"><thead><tr><th>তারিখ</th><th>পরিমান</th><th>মুছুন</th></tr></thead><tbody id="savings-table-body"></tbody></table></div></div>
-        <div id="report-panel" class="panel feature-panel"><header><button class="back-btn"><i class="fas fa-arrow-left"></i></button><h2>রিপোর্ট</h2></header><div class="feature-panel-content"><h4>আয় বনাম ব্যয়</h4><div class="report-filters"><label>শুরু:</label><input type="date" id="start-date"><label>শেষ:</label><input type="date" id="end-date"><button id="filter-report-btn" class="btn">দেখুন</button></div><canvas id="report-chart"></canvas></div></div>
+        <!-- Other Panels -->
+        <div id="dashboard-panel" class="panel feature-panel"><header><button class="back-btn"><i class="fas fa-arrow-left"></i></button><h2>ড্যাশবোর্ড (চলতি মাস)</h2></header><div class="feature-panel-content"><div class="dashboard-summary"><div class="summary-card income"><p><i class="fas fa-arrow-up"></i>মোট আয়</p><h3 id="dashboard-total-income">৳ ০</h3></div><div class="summary-card expense"><p><i class="fas fa-arrow-down"></i>মোট ব্যয়</p><h3 id="dashboard-total-expense">৳ ০</h3></div><div class="summary-card balance"><p><i class="fas fa-wallet"></i>বর্তমান ব্যালেন্স</p><h3 id="dashboard-balance">৳ ০</h3></div><div class="summary-card savings"><p><i class="fas fa-piggy-bank"></i>মোট সঞ্চয়</p><h3 id="dashboard-total-savings">৳ ০</h3></div></div><div class="content-card dashboard-chart-container"><h4>এই মাসের খরচের খাত</h4><canvas id="dashboard-pie-chart"></canvas></div></div></div>
+        <div id="bazar-list-panel" class="panel feature-panel"><header><button class="back-btn"><i class="fas fa-arrow-left"></i></button><h2>বাজার লিস্ট</h2></header><div class="feature-panel-content"><div class="content-card"><form id="bazar-list-form"><div class="form-group"><label>তারিখ</label><input type="date" id="bazar-list-date" required></div><div class="form-group"><label>পণ্যের তালিকা (এক লাইনে একটি)</label><textarea id="bazar-list-products" required></textarea></div><button type="submit">লিস্ট যোগ করুন</button></form></div><div class="content-card"><table class="data-table"><thead><tr><th>তারিখ</th><th>পণ্য তালিকা</th><th></th></tr></thead><tbody id="bazar-list-table-body"></tbody></table></div></div></div>
+        <div id="bazar-khoroch-panel" class="panel feature-panel"><header><button class="back-btn"><i class="fas fa-arrow-left"></i></button><h2>বাজার খরচ</h2></header><div class="feature-panel-content"><div class="content-card"><form id="bazar-khoroch-form"><div class="form-group"><label>তারিখ</label><input type="date" id="bazar-khoroch-date" required></div><div class="form-group"><label>পণ্যের নাম</label><input type="text" id="bazar-khoroch-product" required></div><div class="form-group"><label>পরিমান</label><input type="number" id="bazar-khoroch-quantity" required step="any"></div><div class="form-group"><label>একক</label><select id="bazar-khoroch-unit"><option>কেজি</option><option>পিস</option><option>লিটার</option><option>গ্রাম</option><option>প্যাকেট</option></select></div><div class="form-group"><label>একক মূল্য</label><input type="number" id="bazar-khoroch-unit-price" required step="any"></div><div class="form-group"><label>মোট মূল্য</label><input type="number" id="bazar-khoroch-total" readonly></div><div class="form-group"><label>মন্তব্য (ঐচ্ছিক)</label><input type="text" id="bazar-khoroch-comment"></div><button type="submit">খরচ যোগ করুন</button></form></div><div class="content-card"><table class="data-table"><thead><tr><th>তারিখ</th><th>পণ্য</th><th>মোট মূল্য</th><th></th></tr></thead><tbody id="bazar-khoroch-table-body"></tbody></table></div></div></div>
+        <div id="bay-panel" class="panel feature-panel"><header><button class="back-btn"><i class="fas fa-arrow-left"></i></button><h2>সাধারণ ব্যয়</h2></header><div class="feature-panel-content"><div class="content-card"><form id="expense-form"><div class="form-group"><label>তারিখ</label><input type="date" id="expense-date" required></div><div class="form-group"><label>ব্যয়ের খাত</label><select id="expense-category" required><option>বাসা ভাড়া</option><option>কারেন্ট বিল</option><option>গ্যাস বিল</option><option>পানি বিল</option><option>গাড়ি ভাড়া</option><option>পোশাক</option><option>অন্যান্য</option></select></div><div class="form-group"><label>টাকার পরিমান</label><input type="number" id="expense-amount" required step="any"></div><button type="submit">ব্যয় যোগ করুন</button></form></div><div class="content-card"><table class="data-table"><thead><tr><th>তারিখ</th><th>খাত</th><th>পরিমান</th><th></th></tr></thead><tbody id="expense-table-body"></tbody></table></div></div></div>
+        <div id="aay-panel" class="panel feature-panel"><header><button class="back-btn"><i class="fas fa-arrow-left"></i></button><h2>আয়</h2></header><div class="feature-panel-content"><div class="content-card"><form id="income-form"><div class="form-group"><label>তারিখ</label><input type="date" id="income-date" required></div><div class="form-group"><label>আয়ের খাত</label><select id="income-source" required><option>চাকরি</option><option>ফ্রিলান্সিং</option><option>ব্যবসা</option><option>বোনাস</option><option>অন্যান্য</option></select></div><div class="form-group"><label>টাকার পরিমান</label><input type="number" id="income-amount" required step="any"></div><button type="submit">আয় যোগ করুন</button></form></div><div class="content-card"><table class="data-table"><thead><tr><th>তারিখ</th><th>খাত</th><th>পরিমান</th><th></th></tr></thead><tbody id="income-table-body"></tbody></table></div></div></div>
+        <div id="kisti-panel" class="panel feature-panel"><header><button class="back-btn"><i class="fas fa-arrow-left"></i></button><h2>কিস্তি</h2></header><div class="feature-panel-content"><div class="content-card"><form id="kisti-form"><div class="form-group"><label>কিস্তির নাম</label><input type="text" id="kisti-name" required></div><div class="form-group"><label>কিস্তির ধরন</label><select id="kisti-type"><option value="weekly">সাপ্তাহিক</option><option value="monthly">মাসিক</option><option value="yearly">বাৎসরিক</option></select></div><div class="form-group"><label>কিস্তির পরিমান</label><input type="number" id="kisti-amount" required step="any"></div><div class="form-group"><label>প্রথম কিস্তির তারিখ</label><input type="date" id="kisti-start-date" required></div><button type="submit">কিস্তি যোগ করুন</button></form></div><div class="content-card"><table class="data-table"><thead><tr><th>নাম</th><th>পরিমান</th><th>পরবর্তী তারিখ</th><th></th></tr></thead><tbody id="kisti-table-body"></tbody></table></div></div></div>
+        <div id="shonchoy-panel" class="panel feature-panel"><header><button class="back-btn"><i class="fas fa-arrow-left"></i></button><h2>সঞ্চয়</h2></header><div class="feature-panel-content"><div class="content-card"><form id="savings-form"><div class="form-group"><label>তারিখ</label><input type="date" id="savings-date" required></div><div class="form-group"><label>সঞ্চয়ের পরিমান</label><input type="number" id="savings-amount" required step="any"></div><button type="submit">সঞ্চয় যোগ করুন</button></form></div><div class="content-card"><table class="data-table"><thead><tr><th>তারিখ</th><th>পরিমান</th><th></th></tr></thead><tbody id="savings-table-body"></tbody></table></div></div></div>
+        <div id="report-panel" class="panel feature-panel"><header><button class="back-btn"><i class="fas fa-arrow-left"></i></button><h2>রিপোর্ট</h2></header><div class="feature-panel-content"><div class="content-card"><h4>আয় বনাম ব্যয়</h4><div class="report-filters"><input type="date" id="start-date"><input type="date" id="end-date"><button id="filter-report-btn" class="btn">দেখুন</button></div><canvas id="report-chart"></canvas></div></div></div>
     </div>
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // --- State Management ---
         let db = { users: [], currentUser: null, data: {} };
+        let mobileToReset = null; // for forgot password flow
         const saveData = () => localStorage.setItem('hisabKhataDB', JSON.stringify(db));
         const loadData = () => { if(localStorage.getItem('hisabKhataDB')) db = JSON.parse(localStorage.getItem('hisabKhataDB')); };
 
+        // --- UI & Navigation ---
         let activePanel = 'login-panel';
+        let dashboardPieChart, reportChart, balanceTimeout;
+        
         const showPanel = (panelId) => {
+            if (panelId === 'profile-update-panel') populateProfileUpdateForm();
             document.getElementById(activePanel)?.classList.remove('active');
             document.getElementById(panelId)?.classList.add('active');
             activePanel = panelId;
         };
 
-        const showSuccessCard = () => {
+        const showSuccessCard = (title, message, callback) => {
+            document.getElementById('success-card-title').innerText = title;
+            document.getElementById('success-card-message').innerText = message;
             const card = document.getElementById('success-card');
             card.classList.add('show');
             setTimeout(() => {
                 card.classList.remove('show');
-                showPanel('login-panel');
-            }, 3000);
+                if (callback) callback();
+            }, 2500);
         };
 
-        document.querySelectorAll('.nav-link').forEach(link => link.addEventListener('click', (e) => { e.preventDefault(); showPanel(link.dataset.target); }));
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => { 
+                e.preventDefault(); 
+                const target = link.dataset.target;
+                if (target === 'dashboard-panel') renderDashboard();
+                showPanel(target); 
+            });
+        });
         document.querySelectorAll('.back-btn').forEach(btn => btn.addEventListener('click', () => showPanel('app-interface')));
         
         const profileIcon = document.querySelector('.profile-icon');
         profileIcon.addEventListener('click', (e) => { e.stopPropagation(); profileIcon.classList.toggle('active'); });
         document.addEventListener('click', () => profileIcon.classList.remove('active'));
 
-        const readFileAsDataURL = (file) => {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        };
+        // --- Auth & Profile Functions ---
+        const readFileAsDataURL = (file) => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result); reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
 
         document.getElementById('register-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const name = e.target.querySelector('#register-name').value;
-            const mobile = e.target.querySelector('#register-mobile').value;
-            const password = e.target.querySelector('#register-password').value;
-            const photoFile = e.target.querySelector('#register-photo').files[0];
-            
+            const name = e.target.querySelector('#register-name').value, mobile = e.target.querySelector('#register-mobile').value, password = e.target.querySelector('#register-password').value, photoFile = e.target.querySelector('#register-photo').files[0];
             if (e.target.querySelector('#register-confirm-password').value !== password) return alert('পাসওয়ার্ড মেলেনি!');
             if (db.users.find(u => u.mobile === mobile)) return alert('এই মোবাইল নাম্বার দিয়ে ইতিমধ্যে রেজিস্টার করা আছে।');
-
             let photoDataUrl = null;
-            if (photoFile) {
-                try {
-                    photoDataUrl = await readFileAsDataURL(photoFile);
-                } catch (error) {
-                    console.error("Error reading file:", error);
-                    alert("ছবি আপলোড করা যায়নি।");
-                    return;
-                }
-            }
-
+            if (photoFile) { try { photoDataUrl = await readFileAsDataURL(photoFile); } catch (error) { console.error("Error reading file:", error); return alert("ছবি আপলোড করা যায়নি।"); }}
             db.users.push({ name, mobile, password, photo: photoDataUrl });
             db.data[mobile] = { expenses: [], incomes: [], savings: [], bazarLists: [], bazarExpenses: [], kistis: [] };
-            saveData();
-            showSuccessCard();
+            saveData(); 
+            showSuccessCard('সফল হয়েছে!', 'আপনার রেজিস্ট্রেশন সফল হয়েছে। এখন লগইন করুন।', () => showPanel('login-panel'));
             e.target.reset();
         });
 
         document.getElementById('login-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            const mobile = e.target.querySelector('#login-mobile').value;
-            const password = e.target.querySelector('#login-password').value;
+            const mobile = e.target.querySelector('#login-mobile').value, password = e.target.querySelector('#login-password').value;
             const user = db.users.find(u => u.mobile === mobile && u.password === password);
             if (user) { db.currentUser = user.mobile; saveData(); initializeApp(); } 
             else { alert('ভুল মোবাইল নাম্বার অথবা পাসওয়ার্ড!'); }
@@ -246,138 +310,141 @@
             db.currentUser = null;
             saveData();
             document.getElementById('login-form').reset();
-            profileIcon.classList.remove('has-photo');
+            profileIcon.classList.remove('active', 'has-photo');
             document.getElementById('profile-img-header').src = '';
             showPanel('login-panel');
         });
         
+        document.getElementById('forgot-password-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const mobile = document.getElementById('forgot-mobile').value;
+            const userExists = db.users.find(u => u.mobile === mobile);
+            if (userExists) { mobileToReset = mobile; showPanel('reset-password-panel'); } 
+            else { alert('এই মোবাইল নম্বর দিয়ে কোনো অ্যাকাউন্ট পাওয়া যায়নি।'); }
+        });
+        document.getElementById('reset-password-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newPassword = document.getElementById('reset-new-password').value, confirmPassword = document.getElementById('reset-confirm-password').value;
+            if (newPassword !== confirmPassword) { return alert('পাসওয়ার্ড মেলেনি!'); }
+            const userIndex = db.users.findIndex(u => u.mobile === mobileToReset);
+            if (userIndex !== -1) {
+                db.users[userIndex].password = newPassword;
+                saveData(); mobileToReset = null; e.target.reset();
+                showSuccessCard('সফল!', 'আপনার পাসওয়ার্ড সফলভাবে পরিবর্তন করা হয়েছে।', () => showPanel('login-panel'));
+            } else { alert('একটি সমস্যা হয়েছে। আবার চেষ্টা করুন।'); }
+        });
+        
+        const populateProfileUpdateForm = () => {
+            const user = db.users.find(u => u.mobile === db.currentUser);
+            document.getElementById('update-name').value = user.name;
+            document.getElementById('update-profile-img-preview').src = user.photo || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; // Transparent pixel
+        };
+        
+        document.getElementById('update-photo').addEventListener('change', async (e) => {
+            if (e.target.files && e.target.files[0]) {
+                const photoDataUrl = await readFileAsDataURL(e.target.files[0]);
+                document.getElementById('update-profile-img-preview').src = photoDataUrl;
+            }
+        });
+        
+        document.getElementById('profile-update-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const userIndex = db.users.findIndex(u => u.mobile === db.currentUser);
+            if (userIndex === -1) return;
+            
+            const user = db.users[userIndex];
+            const newName = document.getElementById('update-name').value;
+            const currentPassword = document.getElementById('update-current-password').value;
+            const newPassword = document.getElementById('update-new-password').value;
+            const confirmPassword = document.getElementById('update-confirm-password').value;
+            
+            user.name = newName;
+            user.photo = document.getElementById('update-profile-img-preview').src;
+
+            if (newPassword) {
+                if (currentPassword !== user.password) return alert('আপনার বর্তমান পাসওয়ার্ড সঠিক নয়।');
+                if (newPassword !== confirmPassword) return alert('নতুন পাসওয়ার্ড দুটি মেলেনি।');
+                user.password = newPassword;
+            }
+            
+            saveData();
+            document.getElementById('profile-name').innerText = user.name;
+            document.getElementById('profile-img-header').src = user.photo;
+            if(user.photo) profileIcon.classList.add('has-photo');
+            showSuccessCard('সফল!', 'আপনার প্রোফাইল সফলভাবে আপডেট করা হয়েছে।', () => showPanel('app-interface'));
+        });
+
+        // --- Core App Logic ---
         const initializeApp = () => {
             if (!db.currentUser) return showPanel('login-panel');
-
             if (!db.data[db.currentUser]) db.data[db.currentUser] = {};
-            const requiredKeys = ['expenses', 'incomes', 'savings', 'bazarLists', 'bazarExpenses', 'kistis'];
-            requiredKeys.forEach(key => { if (!Array.isArray(db.data[db.currentUser][key])) { db.data[db.currentUser][key] = []; } });
+            ['expenses', 'incomes', 'savings', 'bazarLists', 'bazarExpenses', 'kistis'].forEach(key => { if (!Array.isArray(db.data[db.currentUser][key])) db.data[db.currentUser][key] = []; });
             saveData();
-
             const user = db.users.find(u => u.mobile === db.currentUser);
             document.getElementById('profile-name').innerText = user.name;
             document.getElementById('profile-mobile').innerText = user.mobile;
-            
             const profileImg = document.getElementById('profile-img-header');
-            if (user.photo) {
-                profileImg.src = user.photo;
-                profileIcon.classList.add('has-photo');
-            } else {
-                profileIcon.classList.remove('has-photo');
-            }
-
+            if (user.photo) { profileImg.src = user.photo; profileIcon.classList.add('has-photo'); } else { profileIcon.classList.remove('has-photo'); }
             const today = new Date().toISOString().split('T')[0];
             document.querySelectorAll('input[type="date"]').forEach(input => input.value = today);
+            updateCurrentBalance();
             renderAllTables();
             initializeReport();
             showPanel('app-interface');
         };
         
+        // --- Data Rendering & Manipulation ---
         const renderTable = (dataType, tableBodyId, renderFn) => {
             const tableBody = document.getElementById(tableBodyId);
             tableBody.innerHTML = '';
             const items = db.data[db.currentUser]?.[dataType] || [];
-            items.forEach((item) => {
-                const row = document.createElement('tr');
-                row.innerHTML = renderFn(item);
-                tableBody.appendChild(row);
-            });
+            items.forEach((item) => { const row = document.createElement('tr'); row.innerHTML = renderFn(item); tableBody.appendChild(row); });
         };
-        
         const renderAllTables = () => {
-            renderTable('bazarLists', 'bazar-list-table-body', item => `<td>${item.date}</td><td><pre>${item.products}</pre></td><td><button class="delete-btn" data-type="bazarLists" data-id="${item.id}"><i class="fas fa-trash"></i></button></td>`);
-            renderTable('bazarExpenses', 'bazar-khoroch-table-body', item => `<td>${item.date}</td><td>${item.product}</td><td>${item.total}</td><td><button class="delete-btn" data-type="bazarExpenses" data-id="${item.id}"><i class="fas fa-trash"></i></button></td>`);
-            renderTable('expenses', 'expense-table-body', item => `<td>${item.date}</td><td>${item.category}</td><td>${item.amount}</td><td><button class="delete-btn" data-type="expenses" data-id="${item.id}"><i class="fas fa-trash"></i></button></td>`);
-            renderTable('incomes', 'income-table-body', item => `<td>${item.date}</td><td>${item.source}</td><td>${item.amount}</td><td><button class="delete-btn" data-type="incomes" data-id="${item.id}"><i class="fas fa-trash"></i></button></td>`);
-            renderTable('kistis', 'kisti-table-body', item => {
-                let nextDate = new Date(item.startDate);
-                if (nextDate < new Date()) {
-                    const today = new Date();
-                    while(nextDate < today) {
-                        if(item.type === 'weekly') nextDate.setDate(nextDate.getDate() + 7);
-                        else if(item.type === 'monthly') nextDate.setMonth(nextDate.getMonth() + 1);
-                        else if(item.type === 'yearly') nextDate.setFullYear(nextDate.getFullYear() + 1);
-                    }
-                }
-                return `<td>${item.name}</td><td>${item.amount}</td><td>${nextDate.toISOString().split('T')[0]}</td><td><button class="delete-btn" data-type="kistis" data-id="${item.id}"><i class="fas fa-trash"></i></button></td>`;
-            });
-            renderTable('savings', 'savings-table-body', item => `<td>${item.date}</td><td>${item.amount}</td><td><button class="delete-btn" data-type="savings" data-id="${item.id}"><i class="fas fa-trash"></i></button></td>`);
+            const deleteBtnHtml = (type, id) => `<td><button class="delete-btn" data-type="${type}" data-id="${id}"><i class="fas fa-trash"></i></button></td>`;
+            renderTable('bazarLists', 'bazar-list-table-body', item => `<td>${item.date}</td><td><pre style="font-family: inherit; margin: 0;">${item.products}</pre></td>${deleteBtnHtml('bazarLists', item.id)}`);
+            renderTable('bazarExpenses', 'bazar-khoroch-table-body', item => `<td>${item.date}</td><td>${item.product}</td><td>${item.total}</td>${deleteBtnHtml('bazarExpenses', item.id)}`);
+            renderTable('expenses', 'expense-table-body', item => `<td>${item.date}</td><td>${item.category}</td><td>${item.amount}</td>${deleteBtnHtml('expenses', item.id)}`);
+            renderTable('incomes', 'income-table-body', item => `<td>${item.date}</td><td>${item.source}</td><td>${item.amount}</td>${deleteBtnHtml('incomes', item.id)}`);
+            renderTable('kistis', 'kisti-table-body', item => { let nextDate = new Date(item.startDate); if (new Date(nextDate) < new Date()) { const today = new Date(); while(new Date(nextDate) < today) { if(item.type === 'weekly') nextDate.setDate(nextDate.getDate() + 7); else if(item.type === 'monthly') nextDate.setMonth(nextDate.getMonth() + 1); else nextDate.setFullYear(nextDate.getFullYear() + 1); } } return `<td>${item.name}</td><td>${item.amount}</td><td>${new Date(nextDate).toISOString().split('T')[0]}</td>${deleteBtnHtml('kistis', item.id)}`; });
+            renderTable('savings', 'savings-table-body', item => `<td>${item.date}</td><td>${item.amount}</td>${deleteBtnHtml('savings', item.id)}`);
         };
-
         const addRecord = (formId, dataType, createItemFn) => {
             document.getElementById(formId).addEventListener('submit', (e) => {
                 e.preventDefault();
                 db.data[db.currentUser][dataType].push(createItemFn(e.target));
-                saveData();
-                renderAllTables();
-                e.target.reset();
-                const dateInput = e.target.querySelector('input[type="date"]');
-                if(dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+                saveData(); renderAllTables(); updateCurrentBalance();
+                e.target.reset(); const dateInput = e.target.querySelector('input[type="date"]'); if(dateInput) dateInput.value = new Date().toISOString().split('T')[0];
             });
         };
-        
         addRecord('bazar-list-form', 'bazarLists', f => ({id: Date.now(), date: f.querySelector('#bazar-list-date').value, products: f.querySelector('#bazar-list-products').value}));
         addRecord('bazar-khoroch-form', 'bazarExpenses', f => ({id: Date.now(), date: f.querySelector('#bazar-khoroch-date').value, product: f.querySelector('#bazar-khoroch-product').value, quantity: f.querySelector('#bazar-khoroch-quantity').value, unit: f.querySelector('#bazar-khoroch-unit').value, unitPrice: f.querySelector('#bazar-khoroch-unit-price').value, total: f.querySelector('#bazar-khoroch-total').value, comment: f.querySelector('#bazar-khoroch-comment').value}));
         addRecord('expense-form', 'expenses', f => ({id: Date.now(), date: f.querySelector('#expense-date').value, category: f.querySelector('#expense-category').value, amount: parseFloat(f.querySelector('#expense-amount').value)}));
         addRecord('income-form', 'incomes', f => ({id: Date.now(), date: f.querySelector('#income-date').value, source: f.querySelector('#income-source').value, amount: parseFloat(f.querySelector('#income-amount').value)}));
         addRecord('kisti-form', 'kistis', f => ({id: Date.now(), name: f.querySelector('#kisti-name').value, type: f.querySelector('#kisti-type').value, amount: parseFloat(f.querySelector('#kisti-amount').value), startDate: f.querySelector('#kisti-start-date').value}));
         addRecord('savings-form', 'savings', f => ({id: Date.now(), date: f.querySelector('#savings-date').value, amount: parseFloat(f.querySelector('#savings-amount').value)}));
-        
         document.querySelector('.app-container').addEventListener('click', e => {
             const btn = e.target.closest('.delete-btn');
-            if (btn) {
-                db.data[db.currentUser][btn.dataset.type] = db.data[db.currentUser][btn.dataset.type].filter(item => item.id !== parseInt(btn.dataset.id));
-                saveData();
-                renderAllTables();
-            }
+            if (btn) { const dataType = btn.dataset.type; db.data[db.currentUser][dataType] = db.data[db.currentUser][dataType].filter(item => item.id !== parseInt(btn.dataset.id)); saveData(); renderAllTables(); if(dataType === 'incomes' || dataType === 'expenses' || dataType === 'bazarExpenses') updateCurrentBalance(); }
         });
-        
-        const qtyInput = document.getElementById('bazar-khoroch-quantity');
-        const priceInput = document.getElementById('bazar-khoroch-unit-price');
-        const totalInput = document.getElementById('bazar-khoroch-total');
-        [qtyInput, priceInput].forEach(input => input.addEventListener('input', () => {
-            totalInput.value = ((parseFloat(qtyInput.value) || 0) * (parseFloat(priceInput.value) || 0)).toFixed(2);
-        }));
+        const qtyInput = document.getElementById('bazar-khoroch-quantity'), priceInput = document.getElementById('bazar-khoroch-unit-price'), totalInput = document.getElementById('bazar-khoroch-total');
+        [qtyInput, priceInput].forEach(input => input.addEventListener('input', () => { totalInput.value = ((parseFloat(qtyInput.value) || 0) * (parseFloat(priceInput.value) || 0)).toFixed(2); }));
 
-        let reportChart;
-        const initializeReport = () => {
-            const today = new Date();
-            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-            document.getElementById('start-date').value = firstDay;
-            document.getElementById('end-date').value = today.toISOString().split('T')[0];
-            generateReport();
-        };
-
-        const generateReport = () => {
-            const start = new Date(document.getElementById('start-date').value);
-            const end = new Date(document.getElementById('end-date').value); end.setHours(23, 59, 59, 999);
-            
-            const filterByDate = (item) => { const itemDate = new Date(item.date); return itemDate >= start && itemDate <= end; };
-            const sumAmount = (sum, item) => sum + (parseFloat(item.amount) || parseFloat(item.total) || 0);
-
-            const totalIncome = (db.data[db.currentUser]?.incomes || []).filter(filterByDate).reduce(sumAmount, 0);
-            const totalGenExpense = (db.data[db.currentUser]?.expenses || []).filter(filterByDate).reduce(sumAmount, 0);
-            const totalBazarExpense = (db.data[db.currentUser]?.bazarExpenses || []).filter(filterByDate).reduce(sumAmount, 0);
-            const totalExpense = totalGenExpense + totalBazarExpense;
-
-            const ctx = document.getElementById('report-chart').getContext('2d');
-            if (reportChart) reportChart.destroy();
-            reportChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['মোট আয়', 'মোট ব্যয়'],
-                    datasets: [{ label: 'টাকার পরিমান', data: [totalIncome, totalExpense], backgroundColor: ['#28a745', '#dc3545'] }]
-                },
-                options: { scales: { y: { beginAtZero: true } }, responsive: true, plugins: { legend: { display: false } } }
-            });
-        };
+        // --- Balance, Dashboard & Reporting ---
+        const calculateCurrentBalance = () => { const sumAmount = (s, i) => s + (parseFloat(i.amount) || parseFloat(i.total) || 0); const totalIncome = (db.data[db.currentUser]?.incomes || []).reduce(sumAmount, 0); const totalExpense = [...(db.data[db.currentUser]?.expenses || []), ...(db.data[db.currentUser]?.bazarExpenses || [])].reduce(sumAmount, 0); return totalIncome - totalExpense; };
+        const updateCurrentBalance = () => { document.getElementById('current-balance-amount').innerText = `৳ ${calculateCurrentBalance().toFixed(2)}`; };
+        document.getElementById('balance-displayer').addEventListener('click', (e) => {
+            const displayer = e.currentTarget; const icon = document.getElementById('balance-toggle-icon');
+            if (balanceTimeout) clearTimeout(balanceTimeout);
+            displayer.classList.add('visible'); icon.classList.replace('fa-eye', 'fa-eye-slash');
+            balanceTimeout = setTimeout(() => { displayer.classList.remove('visible'); icon.classList.replace('fa-eye-slash', 'fa-eye'); }, 2000);
+        });
+        const renderDashboard = () => { const today = new Date(), currentMonth = today.getMonth(), currentYear = today.getFullYear(); const filter = i => { const d = new Date(i.date); return d.getMonth() === currentMonth && d.getFullYear() === currentYear; }; const sum = (s, i) => s + (parseFloat(i.amount) || parseFloat(i.total) || 0); const totalIncome = (db.data[db.currentUser]?.incomes || []).filter(filter).reduce(sum, 0); const totalExpense = [...(db.data[db.currentUser]?.expenses || []), ...(db.data[db.currentUser]?.bazarExpenses || [])].filter(filter).reduce(sum, 0); const totalSavings = (db.data[db.currentUser]?.savings || []).filter(filter).reduce(sum, 0); document.getElementById('dashboard-total-income').innerText = `৳ ${totalIncome.toFixed(2)}`; document.getElementById('dashboard-total-expense').innerText = `৳ ${totalExpense.toFixed(2)}`; document.getElementById('dashboard-balance').innerText = `৳ ${(totalIncome - totalExpense).toFixed(2)}`; document.getElementById('dashboard-total-savings').innerText = `৳ ${totalSavings.toFixed(2)}`; const expenseByCategory = {}; (db.data[db.currentUser]?.expenses || []).filter(filter).forEach(i => { expenseByCategory[i.category] = (expenseByCategory[i.category] || 0) + i.amount; }); const totalBazarExpense = (db.data[db.currentUser]?.bazarExpenses || []).filter(filter).reduce(sum, 0); if (totalBazarExpense > 0) expenseByCategory['বাজার খরচ'] = (expenseByCategory['বাজার খরচ'] || 0) + totalBazarExpense; const ctx = document.getElementById('dashboard-pie-chart').getContext('2d'); if (dashboardPieChart) dashboardPieChart.destroy(); dashboardPieChart = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(expenseByCategory), datasets: [{ data: Object.values(expenseByCategory), backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#C9CBCF'] }] }, options: { responsive: true, plugins: { legend: { position: 'top' } } } }); };
+        const initializeReport = () => { const today = new Date(), firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0]; document.getElementById('start-date').value = firstDay; document.getElementById('end-date').value = today.toISOString().split('T')[0]; generateReport(); };
+        const generateReport = () => { const start = new Date(document.getElementById('start-date').value), end = new Date(document.getElementById('end-date').value); end.setHours(23, 59, 59, 999); const filter = i => { const d = new Date(i.date); return d >= start && d <= end; }; const sum = (s, i) => s + (parseFloat(i.amount) || parseFloat(i.total) || 0); const totalIncome = (db.data[db.currentUser]?.incomes || []).filter(filter).reduce(sum, 0); const totalExpense = [...(db.data[db.currentUser]?.expenses || []), ...(db.data[db.currentUser]?.bazarExpenses || [])].filter(filter).reduce(sum, 0); const ctx = document.getElementById('report-chart').getContext('2d'); if (reportChart) reportChart.destroy(); reportChart = new Chart(ctx, { type: 'bar', data: { labels: ['মোট আয়', 'মোট ব্যয়'], datasets: [{ label: 'টাকার পরিমান', data: [totalIncome, totalExpense], backgroundColor: [ 'rgba(52, 199, 89, 0.8)', 'rgba(255, 59, 48, 0.8)'] }] }, options: { scales: { y: { beginAtZero: true } }, responsive: true, plugins: { legend: { display: false } } } }); };
         document.getElementById('filter-report-btn').addEventListener('click', generateReport);
         
+        // --- Initial Load ---
         loadData();
         initializeApp();
     });
